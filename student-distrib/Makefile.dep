@@ -1,0 +1,36 @@
+as_wrapper.o: as_wrapper.S
+boot.o: boot.S multiboot.h x86_desc.h types.h
+x86_desc.o: x86_desc.S x86_desc.h types.h
+filesystem.o: filesystem.c filesystem.h types.h multiboot.h PCB.h lib.h \
+  terminal.h keyboard_handler.h rtc_handler.h x86_desc.h scheduler.h
+i8259.o: i8259.c i8259.h types.h lib.h
+kernel.o: kernel.c multiboot.h types.h x86_desc.h lib.h i8259.h debug.h \
+  tests.h set_idt.h PCB.h filesystem.h terminal.h keyboard_handler.h \
+  rtc_handler.h syscall.h paging.h scheduler.h
+keyboard_handler.o: keyboard_handler.c keyboard_handler.h types.h \
+  terminal.h lib.h x86_desc.h i8259.h paging.h PCB.h filesystem.h \
+  multiboot.h rtc_handler.h scheduler.h
+lib.o: lib.c lib.h types.h terminal.h keyboard_handler.h scheduler.h \
+  PCB.h filesystem.h multiboot.h rtc_handler.h x86_desc.h
+paging.o: paging.c paging.h types.h filesystem.h multiboot.h PCB.h lib.h \
+  terminal.h keyboard_handler.h rtc_handler.h x86_desc.h
+PCB.o: PCB.c PCB.h types.h filesystem.h multiboot.h lib.h terminal.h \
+  keyboard_handler.h rtc_handler.h x86_desc.h scheduler.h
+rtc_handler.o: rtc_handler.c rtc_handler.h lib.h types.h x86_desc.h PCB.h \
+  filesystem.h multiboot.h terminal.h keyboard_handler.h i8259.h \
+  scheduler.h
+scheduler.o: scheduler.c i8259.h types.h lib.h scheduler.h PCB.h \
+  filesystem.h multiboot.h terminal.h keyboard_handler.h rtc_handler.h \
+  x86_desc.h syscall.h paging.h
+set_idt.o: set_idt.c set_idt.h lib.h types.h x86_desc.h PCB.h \
+  filesystem.h multiboot.h terminal.h keyboard_handler.h rtc_handler.h \
+  syscall.h paging.h as_wrapper.h
+syscall.o: syscall.c syscall.h types.h paging.h filesystem.h multiboot.h \
+  PCB.h lib.h terminal.h keyboard_handler.h rtc_handler.h x86_desc.h \
+  scheduler.h
+terminal.o: terminal.c terminal.h types.h keyboard_handler.h lib.h \
+  syscall.h paging.h scheduler.h PCB.h filesystem.h multiboot.h \
+  rtc_handler.h x86_desc.h
+tests.o: tests.c tests.h x86_desc.h types.h lib.h rtc_handler.h PCB.h \
+  filesystem.h multiboot.h terminal.h keyboard_handler.h syscall.h \
+  paging.h

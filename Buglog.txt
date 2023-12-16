@@ -1,0 +1,108 @@
+Bug Log
+
+Checkpoint 1:
+
+RTC handler not getting called
+Problem: RTC initialization only triggers test_interrupts() once
+Symptom: expected the test_interrupts() visuals to be called but screen was blank after the first handler
+Solution: implemented correct communication to the RTC registers A and B 
+and clearing the mask from register C to allow it to run again
+
+Paging issues during initialization
+Problem: Paging initialization caused problems while booting the image
+Symptom: Bootloop during paging initialization
+Solution: set unpaged memory section to "not present" during initialization
+
+Assembling and compilation errors in lib.h
+Problem: assembler and compiler throwing errors while compiling
+Symptom: weird syntax errors in lib.h although we made minimal modifications
+Solution: removed #include directives from .S files and added #ifndef directives to all headers
+
+General protection error
+Problem: Getting a general protection error when hardware interrupts are called
+Symptom: General protection error thrown at screen after hard interrupt (eg. RTC)
+Solution: Add assembly wrappers to save and restore x86 registers when a hardware interrupt occurs
+
+Checkpoint 2:
+
+Printing garbage in read data
+Problem: Nothing prints in read data
+Solution: Fixing Alignment error in declaring structs byte sizes
+
+Printing garbage in read data
+Problem: Nothing prints in read data
+Solution: used a % operator instead of a /
+
+Backspacing too far leads to page fault
+Solution: set boundary protections
+
+Ctrl+l does not clear screen properly
+Problem: when we hit f, the screen cleared
+Solution: We accidentally mapped the keys to the wrong place in the lookup tabel for terminal driver
+
+Checkpoint 3:
+
+Parsing the command doesn't return the right command.
+Symptom: incorrect command returned after parsing 
+Solution: Change a != to == to skip spaces
+
+Adding a file descriptor doesn't return the correct index properly
+Symptom: can't open file descriptor properly ofr stdin stdout etc
+Solution: eax is clobbered in as_wrapper when int x80 is invoked, so make sure eax is not overwritten.
+
+Page fault when testprint is called.
+Symptom: page fault
+Solution: when creating a new process, stdin, stdout file descriptors overwritten, so add lines to avoid this overwrite.
+
+Boot loop in halt
+Symptom: When restoring esp ebp, we fault and cause a Bootloop
+Solution: we used an arbitrary register in the asm volatile, so eax was getting overrwritten. Specifying registers to avoid overwrite fixed it.
+
+Terminal write doesn't wait for enter
+Symptom: Doesn't wait for user input.
+Solution: set a flag and use a while loop in terminal read
+
+Page fault in testprint
+Symptom: Testprint causes a page fault
+Solution: esp and ebp were reversed
+
+Checkpoint 4:
+
+Getargs causing wrong behavior from ece391_execute
+Symptom: Executing a program sometimes caused abnormal termination 
+Solution: fixed the getargs return value to 0 for success instead of bytes read
+
+User program global variables don't have the correct values
+Symptom: Fish and counter, which use statics and globals, wouldn't work
+Solution: fixed a problem in read_data that couldn't deal with files of non-contiguous data blocks
+
+Getargs not fetching arguments correctly
+Symptom: Would pass in arguments, but argument fetched is always empty
+Solution: fetched argument from parent process in which the called program stores its arguments
+
+File position not being handled correctly in file descriptor table
+Symptom: File read starts at start of file every time
+Solution: removed code that mistakenly reset position to 0 at each file_read call
+
+
+Checkpoint 5:
+Symptom: Bootloop 2
+Solution: putting trash values into esp and ebp since this man tried to use an uninitialized pcb esp and ebp
+
+Keyboard handler insanely buggy
+Solution: Rewrote
+
+Flags cause Bootloop
+Solution: Missing return statements when modifiying alt flag ctrl flag etc
+
+Pingpong causes Bootloop
+Solution: printing to hidden terminal doesn't set the x and y positions correctly
+when scrolling
+
+loading a second program and scheduling terminates abnormally
+Symptom: Bootloop
+Solution: local variables in read data exceeded 8 kB, caused page fault in memcpy
+
+Grep terminates abnormally on close
+Symptom: grep terminates abnormally
+Solution: unecessary if statement that checks if file is absent after closing. Absolutely ridiculous. Deleted if statement
